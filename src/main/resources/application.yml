@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: metrics-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  otlp:
+    metrics:
+      export:
+        url: http://localhost:4318/v1/metrics
