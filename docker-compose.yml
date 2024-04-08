@@ -1,6 +1,7 @@
 version: "3"
 services:
   otel-collector:
+    container_name: open-telemetry
     image: otel/opentelemetry-collector-contrib
     restart: always
     command:
@@ -15,6 +16,9 @@ services:
       - "4317:4317" # OTLP gRPC receiver
       - "4318:4318" # OTLP http receiver
       - "55679:55679" # zpages extension
+    depends_on:
+      - jaeger-server
+      - zipkin
 
   prometheus:
     container_name: prometheus
@@ -28,9 +32,28 @@ services:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    depends_on:
+      - otel-collector
 
   grafana:
     container_name: grafana
     image: grafana/grafana
     ports:
       - "3000:3000"
+
+
+  jaeger-server:
+    container_name: jaeger-server
+    image: jaegertracing/all-in-one
+    restart: always
+    ports:
+      - "16686:16686"
+      - "14268"
+      - "4317"
+
+  zipkin:
+    container_name: zipkin
+    image: openzipkin/zipkin
+    restart: always
+    ports:
+      - "9411:9411"
