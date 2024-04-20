@@ -15,13 +15,35 @@ repositories {
     mavenCentral()
 }
 
+
+
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    runtimeOnly 'io.micrometer:micrometer-registry-otlp'
-    runtimeOnly 'io.micrometer:micrometer-tracing-bridge-otel'
-    runtimeOnly 'io.opentelemetry:opentelemetry-exporter-otlp'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    def otel_sdk_version = '1.31.0'
+
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    runtimeOnly "io.micrometer:micrometer-registry-otlp"
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+    // Open telemetry
+    implementation "io.opentelemetry:opentelemetry-exporter-otlp"
+    implementation "io.micrometer:micrometer-tracing-bridge-otel"
+    implementation "io.opentelemetry:opentelemetry-api:$otel_sdk_version"
+    implementation "io.opentelemetry:opentelemetry-context:$otel_sdk_version"
+    implementation "io.opentelemetry:opentelemetry-sdk:$otel_sdk_version"
+    implementation "io.opentelemetry:opentelemetry-sdk-trace:$otel_sdk_version"
+    implementation "io.opentelemetry:opentelemetry-sdk-metrics:$otel_sdk_version"
+    implementation "io.opentelemetry:opentelemetry-sdk-common:$otel_sdk_version"
+    implementation "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:$otel_sdk_version"
+    implementation "io.opentelemetry:opentelemetry-extension-trace-propagators:$otel_sdk_version"
+    implementation "io.opentelemetry:opentelemetry-exporter-common:$otel_sdk_version"
+    implementation "io.opentelemetry:opentelemetry-exporter-otlp-common:$otel_sdk_version"
+    implementation 'io.opentelemetry.instrumentation:opentelemetry-instrumentation-api-semconv:1.29.0-alpha'
+
+    implementation "io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.2.0-alpha"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
 }
 
 tasks.named('test') {
