@@ -1,6 +1,6 @@
 package com.moreti.metricsservice;
 
-import io.micrometer.observation.annotation.Observed;
+import io.micrometer.core.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -54,8 +54,7 @@ public class MetricsServiceApplication {
 
         @GetMapping("/sleep")
         public Long sleep(@RequestParam Long ms) {
-            Long result = this.sleepService.doSleep(ms);
-            return result;
+            return this.sleepService.doSleep(ms);
         }
 
         @ExceptionHandler(value = { IllegalArgumentException.class })
@@ -68,9 +67,9 @@ public class MetricsServiceApplication {
 
     @Service
     class SleepService {
-        //		@Timed(value = "do.sleep.method.timed")
+        		@Timed(value = "do.sleep.method.timed")
 //		@NewSpan(value = "do-sleep-method-span")
-        @Observed(name = "do.sleep.method.timed", contextualName = "do-sleep-method-span", lowCardinalityKeyValues = {"low", "low"})
+//        @Observed(name = "do.sleep.method.timed", contextualName = "do-sleep-method-span", lowCardinalityKeyValues = {"low", "low"})
         public Long doSleep(Long ms) {
             try {
                 TimeUnit.MILLISECONDS.sleep(ms);
