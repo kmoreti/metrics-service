@@ -1,6 +1,8 @@
 package com.moreti.metricsservice;
 
-import io.micrometer.core.annotation.Timed;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.annotation.Observed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -30,14 +32,17 @@ public class MetricsServiceApplication {
     @RestController
     class HelloController {
 
-        HelloController(RestTemplate restTemplate, SleepService sleepService) {
-            this.restTemplate = restTemplate;
-            this.sleepService = sleepService;
-        }
-
         private static final Logger LOGGER = LoggerFactory.getLogger(HelloController.class);
         private final RestTemplate restTemplate;
         private final SleepService sleepService;
+//        private final Tracer tracer;
+        private final ObservationRegistry observationRegistry;
+
+        HelloController(RestTemplate restTemplate, SleepService sleepService, ObservationRegistry observationRegistry) {
+            this.restTemplate = restTemplate;
+            this.sleepService = sleepService;
+            this.observationRegistry = observationRegistry;
+        }
 
         @GetMapping("/hello")
         public String hello() {
@@ -54,6 +59,20 @@ public class MetricsServiceApplication {
 
         @GetMapping("/sleep")
         public Long sleep(@RequestParam Long ms) {
+            // Span
+//            Span newSpan = this.tracer.nextSpan().name("do-sleep-method-span");
+//            try(Tracer.SpanInScope spanInScope = this.tracer.withSpan(newSpan.start())) {
+//                return this.sleepService.doSleep(ms);
+//            } finally {
+//                newSpan.end();
+//            }
+            // Observation
+//            Long result = Observation.createNotStarted("do.sleep.method.timed", this.observationRegistry) // metric name
+//                    .contextualName("do-sleep-method-span") // span name
+//                    .lowCardinalityKeyValue("low", "low") // tags for metric and span
+//                    .highCardinalityKeyValue("high", "high") // tags for traces (span)
+//                    .observe(() -> this.sleepService.doSleep(ms));
+//            return result;
             return this.sleepService.doSleep(ms);
         }
 
@@ -67,9 +86,9 @@ public class MetricsServiceApplication {
 
     @Service
     class SleepService {
-        		@Timed(value = "do.sleep.method.timed")
+//      @Timed(value = "do.sleep.method.timed")
 //		@NewSpan(value = "do-sleep-method-span")
-//        @Observed(name = "do.sleep.method.timed", contextualName = "do-sleep-method-span", lowCardinalityKeyValues = {"low", "low"})
+        @Observed(name = "do.sleep.method.timed", contextualName = "do-sleep-method-span", lowCardinalityKeyValues = {"low", "low"})
         public Long doSleep(Long ms) {
             try {
                 TimeUnit.MILLISECONDS.sleep(ms);
